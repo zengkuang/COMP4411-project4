@@ -109,6 +109,9 @@ public:
 	bool saveKeyframes(const char* szFileName) const;
 	bool loadKeyframes(const char* szFileName);
 	float keyframeTime(int keyframe) const;
+
+	Vec3f getPosition() const;
+	Vec3f getUpVector() const;
 };
 
 #endif

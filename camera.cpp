@@ -400,4 +400,14 @@ float Camera::keyframeTime(int keyframe) const
 	return 0.0f;
 }
 
+Vec3f Camera::getPosition() const
+{
+	return mPosition;
+}
+
+Vec3f Camera::getUpVector() const
+{
+	return mUpVector;
+}
+
 #pragma warning(pop)

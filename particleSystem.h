@@ -17,8 +17,11 @@
 #define __PARTICLE_SYSTEM_H__
 
 #include "vec.h"
-
-
+#include <vector>
+#include <deque>
+#include <map>
+#include "Force.h"
+#include "Particle.h"
 
 class ParticleSystem {
 
@@ -27,7 +30,7 @@ public:
 
 
 	/** Constructor **/
-	ParticleSystem();
+	ParticleSystem(float gravity, float viscosity);
 
 
 	/** Destructor **/
@@ -70,14 +73,12 @@ public:
 	float getBakeFps() { return bake_fps; }
 	bool isSimulate() { return simulate; }
 	bool isDirty() { return dirty; }
+	bool isBakedAt(float t);
 	void setDirty(bool d) { dirty = d; }
-
+	void SpawnParticles(Vec3f pos, int num, Camera* camera);
 
 
 protected:
-	
-
-
 	/** Some baking-related state **/
 	float bake_fps;						// frame rate at which simulation was baked
 	float bake_start_time;				// time at which baking started 
@@ -89,6 +90,12 @@ protected:
 	bool simulate;						// flag for simulation mode
 	bool dirty;							// flag for updating ui (don't worry about this)
 
+	Camera* m_camera;
+
+	float curTime;
+	deque<Particle> particles;
+	vector<Force*> forces;
+	map<float, deque<Particle>> bakeRec;
 };
 
 

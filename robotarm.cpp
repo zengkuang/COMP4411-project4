@@ -28,7 +28,7 @@
 enum RobotArmControls
 { 
     BASE_ROTATION=0, LOWER_TILT, UPPER_TILT, CLAW_ROTATION,
-        BASE_LENGTH, LOWER_LENGTH, UPPER_LENGTH, PARTICLE_COUNT, NUMCONTROLS, 
+        BASE_LENGTH, LOWER_LENGTH, UPPER_LENGTH, PARTICLE_COUNT, NUMCONTROL, 
 };
 
 void ground(float h);
@@ -268,7 +268,7 @@ void y_box(float h) {
 
 int main()
 {
-    ModelerControl controls[NUMCONTROLS ];
+    ModelerControl controls[NUMCONTROL];
 
 	controls[BASE_ROTATION] = ModelerControl("base rotation (theta)", -180.0, 180.0, 0.1, 0.0 );
     controls[LOWER_TILT] = ModelerControl("lower arm tilt (phi)", 15.0, 95.0, 0.1, 55.0 );
@@ -284,8 +284,10 @@ int main()
 	// You should create a ParticleSystem object ps here and then
 	// call ModelerApplication::Instance()->SetParticleSystem(ps)
 	// to hook it up to the animator interface.
+	ParticleSystem *ps = new ParticleSystem(3, 0.5);
+	ModelerApplication::Instance()->SetParticleSystem(ps);
 
-    ModelerApplication::Instance()->Init(&createRobotArm, controls, NUMCONTROLS);
+    ModelerApplication::Instance()->Init(&createRobotArm, controls, NUMCONTROL);
 
     return ModelerApplication::Instance()->Run();
 }

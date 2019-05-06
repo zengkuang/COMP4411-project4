@@ -7,6 +7,9 @@
 
 #include <FL/gl.h>
 #include <cstdio>
+#include "modelerglobals.h"
+#include "mat.h"
+#include "vec.h"
 
 
 enum DrawModeSetting_t 
@@ -55,6 +58,9 @@ private:
 // ****************************************************************************
 
 // Set the current material properties
+void _setupOpenGl();
+void _dump_current_modelview(void);
+void _dump_current_material(void);
 void setAmbientColor(float r, float g, float b);
 void setDiffuseColor(float r, float g, float b);
 void setSpecularColor(float r, float g, float b);
@@ -91,5 +97,22 @@ void drawCylinder( double h, double r1, double r2 );
 void drawTriangle( double x1, double y1, double z1,
 			       double x2, double y2, double z2,
 			       double x3, double y3, double z3 );
+//drawRectangular Prism
+void drawRectangularPrism(double r1, double r2, double h);
+void drawTorso(double r1, double r2, double h);
+void drawShoulder(double r, double h, int level);
+void drawWing();
+void drawRectangularPyramid(double r, double h);
+void drawTriangularPrism(double a, double b, double h, double theta);
+void drawLsystem(int type, int size);
+int loadimage();
+void drawTexture();
+void drawLight();
+void drawMetaBallBody(int ang);
+void drawMetaBallLeftArm(int ang, int angz);
+void drawMetaBallRightArm(int ang, int angz);
+void drawMetaBallLeftLeg(int ang);
+void drawMetaBallRightLeg(int ang);
+Mat4d getModelViewMatrix();
 
 #endif

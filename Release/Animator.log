@@ -1,2 +1,10 @@
-﻿  C2interpolationcurveevaluator.cpp
+﻿  IronMan.cpp
+c:\users\55211\desktop\comp\comp4411\assignment\assignment4\comp4411-project4\ironman.cpp(54): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\55211\desktop\comp\comp4411\assignment\assignment4\comp4411-project4\ironman.cpp(87): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\55211\desktop\comp\comp4411\assignment\assignment4\comp4411-project4\ironman.cpp(88): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\55211\desktop\comp\comp4411\assignment\assignment4\comp4411-project4\ironman.cpp(89): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\55211\desktop\comp\comp4411\assignment\assignment4\comp4411-project4\ironman.cpp(90): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\55211\desktop\comp\comp4411\assignment\assignment4\comp4411-project4\ironman.cpp(91): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\55211\desktop\comp\comp4411\assignment\assignment4\comp4411-project4\ironman.cpp(92): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\55211\desktop\comp\comp4411\assignment\assignment4\comp4411-project4\ironman.cpp(93): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
   Animator.vcxproj -> C:\Users\55211\Desktop\COMP\COMP4411\Assignment\Assignment4\COMP4411-project4\.\Release\modeler.exe

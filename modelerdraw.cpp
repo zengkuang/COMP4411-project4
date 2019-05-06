@@ -1,7 +1,12 @@
 #include "modelerdraw.h"
 #include <FL/gl.h>
+#include <FL/fl_ask.H>
 #include <GL/glu.h>
 #include <cstdio>
+#include <math.h>
+#include "bitmap.h"
+#include "MetaBall.h"
+#include "modelerglobals.h"
 
 // ********************************************************
 // Support functions from previous version of modeler
@@ -413,4 +418,363 @@ void drawTriangle( double x1, double y1, double z1,
         glVertex3d( x3, y3, z3 );
         glEnd();
     }
+}
+void drawRectangularPrism(double r1, double r2, double h)
+{
+	double a = (r2 - r1) / 2;
+	double b = (r2 + r1) / 2;
+	drawTriangle(0, 0, 0, r2, 0, r2, 0, 0, r2);
+	drawTriangle(0, 0, 0, r2, 0, 0, r2, 0, r2);
+
+	drawTriangle(0, 0, 0, a, h, b, a, h, a);
+	drawTriangle(0, 0, 0, 0, 0, r2, a, h, b);
+
+	drawTriangle(0, 0, 0, a, h, a, b, h, a);
+	drawTriangle(0, 0, 0, b, h, a, r2, 0, 0);
+
+	drawTriangle(r2, 0, 0, b, h, a, b, h, b);
+	drawTriangle(r2, 0, 0, b, h, b, r2, 0, r2);
+
+	drawTriangle(0, 0, r2, b, h, b, a, h, b);
+	drawTriangle(0, 0, r2, r2, 0, r2, b, h, b);
+
+	drawTriangle(a, h, a, a, h, b, b, h, b);
+	drawTriangle(a, h, a, b, h, b, b, h, a);
+}
+
+void drawTorso(double r1, double r2, double h)
+{
+	double a = (r2 - r1) / 2;
+	double b = (r2 + r1) / 2;
+	setDiffuseColor(COLOR_RED);
+	drawTriangle(0, 0, 0, r2, 0, r2, 0, 0, r2);
+	drawTriangle(0, 0, 0, r2, 0, 0, r2, 0, r2);
+
+	drawTriangle(0, 0, 0, a, h, b, a, h, a);
+	drawTriangle(0, 0, 0, 0, 0, r2, a, h, b);
+
+	drawTriangle(0, 0, 0, a, h, a, b, h, a);
+	drawTriangle(0, 0, 0, b, h, a, r2, 0, 0);
+
+	drawTriangle(r2, 0, 0, b, h, a, b, h, b);
+	drawTriangle(r2, 0, 0, b, h, b, r2, 0, r2);
+
+
+	/*
+		drawTriangle(0, 0, r2, b, h, b, a, h, b);
+		drawTriangle(0, 0, r2, r2, 0, r2, b, h, b);
+		*/
+	drawTriangle((3 * a + r2) / 4, 3 * h / 4, (3 * b + r2) / 4, a, h, b, b, h, b);
+	drawTriangle(3 * b / 4, 3 * h / 4, (3 * b + r2) / 4, (3 * a + r2) / 4, 3 * h / 4, (3 * b + r2) / 4, b, h, b);
+	drawTriangle((3 * a + r2) / 4, 3 * h / 4, (3 * b + r2) / 4, 0, 0, r2, a, h, b);
+	drawTriangle(a*r2 / (r2 + r1) + r2 * r1 / (r2 + r1), h*r2 / (r2 + r1), b*r2 / (r2 + r1) + r2 * r1 / (r2 + r1), 0, 0, r2, (3 * a + r2) / 4, 3 * h / 4, (3 * b + r2) / 4);
+	drawTriangle(r2, 0, r2, 0, 0, r2, a*r2 / (r2 + r1) + r2 * r1 / (r2 + r1), h*r2 / (r2 + r1), b*r2 / (r2 + r1) + r2 * r1 / (r2 + r1));
+	drawTriangle(r2, 0, r2, a*r2 / (r2 + r1) + r2 * r1 / (r2 + r1), h*r2 / (r2 + r1), b*r2 / (r2 + r1) + r2 * r1 / (r2 + r1), 3 * b / 4, 3 * h / 4, (3 * b + r2) / 4);
+	drawTriangle(r2, 0, r2, 3 * b / 4, 3 * h / 4, (3 * b + r2) / 4, b, h, b);
+
+	drawTriangle(a, h, a, a, h, b, b, h, b);
+	drawTriangle(a, h, a, b, h, b, b, h, a);
+	setDiffuseColor(COLOR_WHITE);
+	drawTriangle(a*r2 / (r2 + r1) + r2 * r1 / (r2 + r1), h*r2 / (r2 + r1), b*r2 / (r2 + r1) + r2 * r1 / (r2 + r1), (3 * a + r2) / 4, 3 * h / 4, (3 * b + r2) / 4, 3 * b / 4, 3 * h / 4, (3 * b + r2) / 4);
+
+
+}
+void drawShoulder(double r, double h, int level)
+{
+	glPushMatrix();
+
+	if (level > 0)
+	{
+		drawBox(r, r, r);
+	}
+	if (level > 1)
+	{
+		glRotated(-90, 1.0, 0.0, 0.0);
+		drawRectangularPyramid(r, h);
+		glRotated(90, 1.0, 0.0, 0.0);
+		glTranslated(0, r, 0);
+		drawRectangularPyramid(r, h);
+		glTranslated(0, 0, r);
+		glRotated(90, 1.0, 0.0, 0.0);
+		drawRectangularPyramid(r, h);
+		glRotated(-90, 1.0, 0.0, 0.0);
+		glTranslated(r, 0, 0);
+		glRotated(90, 0, 1, 0);
+		glRotated(90, 1, 0, 0);
+		drawRectangularPyramid(r, h);
+	}
+	glPopMatrix();
+}
+
+void drawWing() {
+	glPushMatrix();
+	glTranslated(0, 4, -4);
+
+	setAmbientColor(.1f, .1f, .1f);
+	setDiffuseColor(COLOR_RED);
+
+	glPushMatrix();
+	glTranslated(0.5, 0.75 / 1.414 + 0.5, 0);
+	glRotated(-45, 0.0, 0.0, 1.0);
+	drawRectangularPrism(1.5, 0.75, 3);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(-0.5, 0.5, 0);
+	glRotated(45, 0.0, 0.0, 1.0);
+	drawRectangularPrism(1.5, 0.75, 3);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(0.75 / 1.414 + 0.5, -0.5, 0);
+	glRotated(-135, 0.0, 0.0, 1.0);
+	drawRectangularPrism(1.5, 0.75, 3);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(0.75 / 1.414 - 0.5, -0.55 - 0.5, 0);
+	glRotated(135, 0.0, 0.0, 1.0);
+	drawRectangularPrism(1.5, 0.75, 3);
+	glPopMatrix();
+
+	glPopMatrix();
+
+
+
+}
+
+void drawRectangularPyramid(double r, double h)
+{
+	drawTriangle(0, 0, 0, 0, 0, r, r, 0, r);
+	drawTriangle(0, 0, 0, r, 0, r, r, 0, 0);
+	drawTriangle(r / 2, h, r / 2, 0, 0, 0, 0, 0, r);
+	drawTriangle(r / 2, h, r / 2, 0, 0, r, r, 0, r);
+	drawTriangle(r / 2, h, r / 2, r, 0, r, r, 0, 0);
+	drawTriangle(r / 2, h, r / 2, r, 0, 0, 0, 0, 0);
+}
+
+void drawTriangularPrism(double a, double b, double h, double theta)
+{
+	double sinT = sin(theta * M_PI / 180);
+	double cosT = cos(theta * M_PI / 180);
+	drawTriangle(0, 0, 0, a, 0, 0, b * cosT, 0, b * sinT);
+
+	drawTriangle(0, 0, 0, b * cosT, 0, b * sinT, 0, h, 0);
+	drawTriangle(b * cosT, 0, b * sinT, b * cosT, h, b * sinT, 0, h, 0);
+
+	drawTriangle(b * cosT, 0, b * sinT, a, 0, 0, b * cosT, h, b * sinT);
+	drawTriangle(a, 0, 0, a, h, 0, b * cosT, h, b * sinT);
+
+	drawTriangle(0, 0, 0, 0, h, 0, a, 0, 0);
+	drawTriangle(a, 0, 0, 0, h, 0, a, h, 0);
+
+	drawTriangle(0, h, 0, b * cosT, h, b * sinT, a, h, 0);
+}
+
+void drawLsystem(int type, int size) {
+	if (size == 1)
+	{
+		glPushMatrix();
+		glBegin(GL_LINES);
+		glVertex3d(0, 0, 0);
+		glVertex3d(0, 2, 0);
+		glEnd();
+		glTranslated(0, 2, 0);
+		glRotated(-30, 0.0, 0.0, 1.0);
+		glBegin(GL_LINES);
+		glVertex3d(0, 0, 0);
+		glVertex3d(0, 2, 0);
+		glEnd();
+		glRotated(60, 0.0, 0.0, 1.0);
+		glBegin(GL_LINES);
+		glVertex3d(0, 0, 0);
+		glVertex3d(0, 2, 0);
+		glEnd();
+		glRotated(-30, 0.0, 0.0, 1.0);
+		glPopMatrix();
+	}
+	else {
+		glPushMatrix();
+		glBegin(GL_LINES);
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, 2, 0);
+		glEnd();
+		glTranslated(0, 2, 0);
+		glRotated(-30, 0.0, 0.0, 1.0);
+		drawLsystem(type, size - 1);
+		glRotated(60, 0.0, 0.0, 1.0);
+		drawLsystem(type, size - 1);
+		glRotated(-30, 0.0, 0.0, 1.0);
+		glPopMatrix();
+	}
+}
+
+void _dump_current_modelview(void);
+void _dump_current_material(void);
+void _setupOpenGl();
+GLuint textID;
+int	width, height;
+unsigned char*	m_Bitmap;
+
+int loadimage()
+{
+	unsigned char* imagedata;
+	char* imagename = "ferry.bmp";
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if ((imagedata = readBMP(imagename, width, height)) == NULL)
+	{
+		fl_alert("Can't load bitmap file");
+		return 0;
+	}
+
+	m_Bitmap = imagedata;
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &textID);
+	glBindTexture(GL_TEXTURE_2D, textID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_Bitmap);
+
+	return 1;
+}
+
+
+void drawTexture()
+{
+	_setupOpenGl();
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glBindTexture(GL_TEXTURE_2D, textID);
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 0.0); glVertex3f(-2.0, -1.0, 0.0);
+	glTexCoord2f(0.0, 1.0); glVertex3f(-2.0, 1.0, 0.0);
+	glTexCoord2f(1.0, 1.0); glVertex3f(0.0, 1.0, 0.0);
+	glTexCoord2f(1.0, 0.0); glVertex3f(0.0, -1.0, 0.0);
+
+	glEnd();
+	glFlush();
+	glDisable(GL_TEXTURE_2D);
+}
+
+void drawLight()
+{
+	setAmbientColor(.1f, .1f, .1f);
+	setDiffuseColor(COLOR_AQUA);
+	MetaBall* m_metaBall = new MetaBall(1.0f);
+	m_metaBall->addBallAbs(Vec3f(3.0f, 5.5f, 3.75f), 2.5f);
+	m_metaBall->draw(10);
+	delete m_metaBall;
+}
+
+void drawMetaBallBody(int ang)
+{
+	setAmbientColor(.1f, .1f, .1f);
+	setDiffuseColor(COLOR_RED);
+	MetaBall* m_metaBall = new MetaBall(1.0f);
+	m_metaBall->addBallAbs(Vec3f(-1.0f, -2.5f, 0.0f), 3.0f);
+	m_metaBall->addBallAbs(Vec3f(1.0f, -2.5f, 0.0f), 3.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.0f, 0.0f), 3.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -1.0f, 0.0f), 3.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, 0.0f, 0.0f), 4.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, 1.0f, 0.0f), 3.0f);
+	m_metaBall->addBallAbs(Vec3f(-1.25f, 1.0f, 0.0f), 2.0f);
+	m_metaBall->addBallAbs(Vec3f(1.25f, 1.0f, 0.0f), 2.0f);
+	m_metaBall->addBallAbs(Vec3f(-2.25f, 1.0f, 0.0f), 3.0f);
+	m_metaBall->addBallAbs(Vec3f(2.25f, 1.0f, 0.0f), 3.0f);
+	// Head
+	m_metaBall->addBallAbs(Vec3f(0.0f, 1.0f + 2.0f*cos(ang*M_PI / 180), 0.0f + 2.0f*sin(ang*M_PI / 180)), 6.0f);
+	m_metaBall->draw(10);
+	delete m_metaBall;
+}
+
+void drawMetaBallLeftArm(int ang, int angz)
+{
+	setAmbientColor(.1f, .1f, .1f);
+	setDiffuseColor(COLOR_RED);
+	MetaBall* m_metaBall = new MetaBall(1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, 0.0f, 0.0f), 3.0f);
+	m_metaBall->addBallAbs(Vec3f(-0.25f, -0.75f, 0.0f), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(-0.4f, -1.2f, 0.0f), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(-0.7f, -1.95f, 0.0f), 1.5f);
+
+	m_metaBall->addBallAbs(Vec3f(-0.7f + 0.6f*sin(angz*M_PI / 180), -1.95f - 0.6f*cos(ang*M_PI / 180)*cos(angz*M_PI / 180), 0.0f + 0.6f*sin(ang*M_PI / 180)*cos(angz*M_PI / 180)), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(-0.7f + 1.1f*sin(angz*M_PI / 180), -1.95f - 1.1f*cos(ang*M_PI / 180)*cos(angz*M_PI / 180), 0.0f + 1.1f*sin(ang*M_PI / 180)*cos(angz*M_PI / 180)), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(-0.7f + 1.6f*sin(angz*M_PI / 180), -1.95f - 1.6f*cos(ang*M_PI / 180)*cos(angz*M_PI / 180), 0.0f + 1.6f*sin(ang*M_PI / 180)*cos(angz*M_PI / 180)), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(-0.7f + 2.6f*sin(angz*M_PI / 180), -1.95f - 2.6f*cos(ang*M_PI / 180)*cos(angz*M_PI / 180), 0.0f + 2.6f*sin(ang*M_PI / 180)*cos(angz*M_PI / 180)), 2.5f);
+	m_metaBall->draw(10);
+	delete m_metaBall;
+}
+
+void drawMetaBallRightArm(int ang, int angz)
+{
+	setAmbientColor(.1f, .1f, .1f);
+	setDiffuseColor(COLOR_RED);
+	MetaBall* m_metaBall = new MetaBall(1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, 0.0f, 0.0f), 3.0f);
+	m_metaBall->addBallAbs(Vec3f(0.25f, -0.75f, 0.0f), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.4f, -1.2f, 0.0f), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.7f, -1.95f, 0.0f), 1.5f);
+
+	m_metaBall->addBallAbs(Vec3f(0.7f - 0.6f*sin(angz*M_PI / 180), -1.95f - 0.6f*cos(ang * M_PI / 180)*cos(angz*M_PI / 180), 0.0f + 0.6f*sin(ang * M_PI / 180)*cos(angz*M_PI / 180)), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.7f - 1.1f*sin(angz*M_PI / 180), -1.95f - 1.1f*cos(ang * M_PI / 180)*cos(angz*M_PI / 180), 0.0f + 1.1f*sin(ang * M_PI / 180)*cos(angz*M_PI / 180)), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.7f - 1.6f*sin(angz*M_PI / 180), -1.95f - 1.6f*cos(ang * M_PI / 180)*cos(angz*M_PI / 180), 0.0f + 1.6f*sin(ang * M_PI / 180)*cos(angz*M_PI / 180)), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.7f - 2.6f*sin(angz*M_PI / 180), -1.95f - 2.6f*cos(ang * M_PI / 180)*cos(angz*M_PI / 180), 0.0f + 2.6f*sin(ang * M_PI / 180)*cos(angz*M_PI / 180)), 2.5f);
+	m_metaBall->draw(10);
+	delete m_metaBall;
+}
+
+void drawMetaBallLeftLeg(int ang)
+{
+	setAmbientColor(.1f, .1f, .1f);
+	setDiffuseColor(COLOR_RED);
+	MetaBall* m_metaBall = new MetaBall(1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, 0.0f, 0.0f), 3.5f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -1.0f, 0.0f), 2.5f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -1.9f, 0.0f), 2.5f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f, 0.0f), 2.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 0.6f*cos(ang*M_PI / 180), 0.0f + 0.6f*sin(ang*M_PI / 180)), 1.2f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 1.0f*cos(ang*M_PI / 180), 0.0f + 1.0f*sin(ang*M_PI / 180)), 1.5f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 1.5f*cos(ang*M_PI / 180), 0.0f + 1.5f*sin(ang*M_PI / 180)), 1.25f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 2.2f*cos(ang*M_PI / 180), 0.0f + 2.2f*sin(ang*M_PI / 180)), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 3.2f*cos(ang*M_PI / 180), 0.0f + 3.2f*sin(ang*M_PI / 180)), 2.5f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 3.2f*cos(ang*M_PI / 180) + 1.0f*sin(ang*M_PI / 180), 1.0f*cos(ang*M_PI / 180) + 3.2f*sin(ang*M_PI / 180)), 1.5f);
+	m_metaBall->draw(10);
+	delete m_metaBall;
+}
+
+void drawMetaBallRightLeg(int ang)
+{
+	setAmbientColor(.1f, .1f, .1f);
+	setDiffuseColor(COLOR_RED);
+	MetaBall* m_metaBall = new MetaBall(1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, 0.0f, 0.0f), 3.5f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -1.0f, 0.0f), 2.5f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -1.9f, 0.0f), 2.5f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f, 0.0f), 2.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 0.6f*cos(ang*M_PI / 180), 0.0f + 0.6f*sin(ang*M_PI / 180)), 1.2f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 1.0f*cos(ang*M_PI / 180), 0.0f + 1.0f*sin(ang*M_PI / 180)), 1.5f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 1.5f*cos(ang*M_PI / 180), 0.0f + 1.5f*sin(ang*M_PI / 180)), 1.25f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 2.2f*cos(ang*M_PI / 180), 0.0f + 2.2f*sin(ang*M_PI / 180)), 1.0f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 3.2f*cos(ang*M_PI / 180), 0.0f + 3.2f*sin(ang*M_PI / 180)), 2.5f);
+	m_metaBall->addBallAbs(Vec3f(0.0f, -2.6f - 3.2f*cos(ang*M_PI / 180) + 1.0f*sin(ang*M_PI / 180), 1.0f*cos(ang*M_PI / 180) + 3.2f*sin(ang*M_PI / 180)), 1.5f);
+	m_metaBall->draw(10);
+	delete m_metaBall;
+}
+
+Mat4d getModelViewMatrix()
+{
+	GLdouble m[16];
+	glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	Mat4d matMV(m[0], m[1], m[2], m[3],
+		m[4], m[5], m[6], m[7],
+		m[8], m[9], m[10], m[11],
+		m[12], m[13], m[14], m[15]);
+
+	return matMV.transpose();
 }
